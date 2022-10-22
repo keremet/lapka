@@ -1,0 +1,13 @@
+[Unit]
+Description=Lapka server
+After=syslog.target network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/sbin/lapka_server
+Type=simple
+Restart=on-failure
+WorkingDirectory=/home/keremet/compile/lapka/
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Lapka client
+After=syslog.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/lapka_client 127.0.0.1
+
+[Install]
+WantedBy=multi-user.target
