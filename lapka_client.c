@@ -2,10 +2,24 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include "protocol.h"
+
+ssize_t read_and_close_pipe(int fd, char* buf, size_t bufsz) {
+	ssize_t readed_bytes_all = 0;
+	do {
+		ssize_t readed_bytes = read(fd, buf + readed_bytes_all, bufsz - readed_bytes_all);
+		if (readed_bytes <= 0)
+			break;
+		readed_bytes_all += readed_bytes;
+	} while (readed_bytes_all < bufsz);
+
+	close(fd);
+	return readed_bytes_all;
+}
 
 int main(int argc, char *argv[]) {
 	if (argc != 1 + 1) {
@@ -84,27 +98,18 @@ int main(int argc, char *argv[]) {
 		splice(sockfd, NULL, pipe_stdin[1], NULL, sz, 0);
 		close(pipe_stdin[1]);
 
-		char buf_stdout[1000] = {0};
-		read(pipe_stdout[0], buf_stdout, sizeof(buf_stdout) - 1);
-		close(pipe_stdout[0]);
-
-		char buf_stderr[1000] = {0};
-		read(pipe_stderr[0], buf_stderr, sizeof(buf_stderr) - 1);
-		close(pipe_stderr[0]);
+		char result_msg[MAX_STATE];
+		char* p_result_msg = result_msg;
+		strcpy(p_result_msg, "STDOUT:\n"); p_result_msg += 8;
+		p_result_msg += read_and_close_pipe(pipe_stdout[0], p_result_msg, MAX_STDOUT);
+		strcpy(p_result_msg, "\n\nSTDERR:\n"); p_result_msg += 10;
+		p_result_msg += read_and_close_pipe(pipe_stderr[0], p_result_msg, MAX_STDERR);
 
 		int status;
 		waitpid(childpid, &status, 0);
-
-		char result_msg[MAX_STATE];
-		snprintf(result_msg, sizeof(result_msg),
-				"STDOUT:\n"
-				"%s\n"
-				"\n"
-				"STDERR:\n"
-				"%s\n"
-				"\n"
-				"RETCODE: %i\n",
-				buf_stdout, buf_stderr, status
+		sprintf(p_result_msg,
+				"\n\nRETCODE: %i\n",
+				status
 				);
 		send_str(sockfd, result_msg);
 	}
