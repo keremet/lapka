@@ -7,9 +7,9 @@
 
 void send_str(int sockfd, const char* str)
 {
-	size_t hostname_len = strlen(str);
-	write(sockfd, &hostname_len, sizeof(hostname_len));
-	write(sockfd, str, hostname_len);
+	size_t len = strlen(str);
+	write(sockfd, &len, sizeof(len));
+	write(sockfd, str, len);
 }
 
 char* recv_str(int sockfd)
