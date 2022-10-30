@@ -59,6 +59,11 @@ int process_connection (int connfd) {
 			return 1;
 		}
 
+		char dir_state[PATH_MAX];
+		snprintf(dir_state, sizeof(dir_state), "commands/%s/state", de->d_name);
+		if (access(dir_state, F_OK) != 0)
+			mkdir(dir_state, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+
 		int fd_state = open(fn_state, O_CREAT | O_EXCL | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 		if (fd_state < 0) {
 			fprintf(stderr, "Cannot open file %s\n", fn_state);
