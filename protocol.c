@@ -12,34 +12,34 @@ void send_str(int sockfd, const char* str)
 	write(sockfd, str, len);
 }
 
-char* recv_str(int sockfd)
-{
-	size_t len;
-	int n = read(sockfd, &len, sizeof(len));
-	if (0 == n)
-		exit(0);
-
-	if (n < 0) {
-		fprintf(stderr, "\n Error : Read len Failed \n");
-		exit(1);
-	}
-
-	char* str = malloc(len + 1 /* for zero */);
-	if (NULL == str) {
-		fprintf(stderr, "\n Error : malloc Failed \n");
-		exit(1);
-	}
-
-	n = read(sockfd, str, len);
-	if (0 == n)
-		exit(0);
-
-	if (n < 0) {
-		fprintf(stderr, "\n Error : Read command Failed \n");
-		exit(1);
-	}
-
-	str[len] = 0;
-
-	return str;
-}
+//char* recv_str(int sockfd)
+//{
+//	size_t len;
+//	int n = read(sockfd, &len, sizeof(len));
+//	if (0 == n)
+//		exit(0);
+//
+//	if (n < 0) {
+//		fprintf(stderr, "\n Error : Read len Failed \n");
+//		exit(1);
+//	}
+//
+//	char* str = malloc(len + 1 /* for zero */);
+//	if (NULL == str) {
+//		fprintf(stderr, "\n Error : malloc Failed \n");
+//		exit(1);
+//	}
+//
+//	n = read(sockfd, str, len);
+//	if (0 == n)
+//		exit(0);
+//
+//	if (n < 0) {
+//		fprintf(stderr, "\n Error : Read command Failed \n");
+//		exit(1);
+//	}
+//
+//	str[len] = 0;
+//
+//	return str;
+//}
